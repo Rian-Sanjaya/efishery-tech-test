@@ -1,8 +1,24 @@
+import { Layout } from "antd";
+import HeaderLayout from "../components/layout/Header";
+import Komoditas from "../components/komoditas/Komoditas";
+
 function App() {
+  const { Header, Content } = Layout;
+
   return (
-    <div className="App">
-      Homepage
-    </div>
+    <Layout style={{ minWidth: 586 }}>
+      <Header
+        style={{ position: "fixed", zIndex: 1, width: "100%", background: "#fff" }}
+      >
+        <HeaderLayout />
+      </Header>
+      <Content
+        className="content-layout-wrapper"
+        style={{ padding: "0 16px", marginTop: 64, minWidth: 586 }}
+      >
+        <Komoditas />
+      </Content>
+    </Layout>
   );
 }
 
