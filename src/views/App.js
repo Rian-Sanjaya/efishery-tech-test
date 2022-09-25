@@ -1,25 +1,24 @@
-import {useState, useEffect} from "react";
-import { steinStore } from "../api/api-method";
+import { Layout } from "antd";
+import HeaderLayout from "../components/layout/Header";
+import Komoditas from "../components/komoditas/Komoditas";
 
 function App() {
-  const [comodities, setComodities] = useState(null);
-
-  useEffect(() => {
-    steinStore.read("list")
-      .then(res => {
-        const data = res.filter(item => item.uuid);
-        setComodities(data);
-      });
-  }, []);
+  const { Header, Content } = Layout;
 
   return (
-    <div className="App">
-      {comodities && comodities.length && comodities.map(comodity => (
-        <div key={comodity.uuid}>
-          { comodity.komoditas }
-        </div>
-      ))}
-    </div>
+    <Layout style={{ minWidth: 586 }}>
+      <Header
+        style={{ position: "fixed", zIndex: 1, width: "100%", background: "#fff" }}
+      >
+        <HeaderLayout />
+      </Header>
+      <Content
+        className="content-layout-wrapper"
+        style={{ padding: "0 16px", marginTop: 64, minWidth: 586 }}
+      >
+        <Komoditas />
+      </Content>
+    </Layout>
   );
 }
 
