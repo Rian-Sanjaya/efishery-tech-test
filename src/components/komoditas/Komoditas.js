@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Spin, Table, Input, Dropdown, Menu, Space } from "antd";
+import { Button, Table, Input, Dropdown, Menu, Space } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { titleChanged } from "../../store/header";
 import { getComodities, getLoading, fetchComodities} from "../../store/komoditas";
 import KomoditasModal from "./KomoditasModal";
 import DeleteComodity from "./DeleteComodity";
+import { formattedCurrency } from "../../helper/numberFunctions";
 
 const emptyComodity = {
   uuid: "",
@@ -82,12 +83,32 @@ function Komoditas() {
       sorter: sortKota,
       filters: [
         {
-          text: "PURWOREJO",
-          value: "PURWOREJO",
-        },
-        {
           text: "ACEH KOTA",
           value: "ACEH KOTA",
+        },
+        {
+          text: "BULELENG",
+          value: "BULELENG",
+        },
+        {
+          text: "PANDEGLANG",
+          value: "PANDEGLANG",
+        },
+        {
+          text: "KOTA TUA",
+          value: "KOTA TUA",
+        },
+        {
+          text: "BANDUNG",
+          value: "BANDUNG",
+        },
+        {
+          text: "CIREBON",
+          value: "CIREBON",
+        },
+        {
+          text: "PURWOREJO",
+          value: "PURWOREJO",
         },
       ],
       onFilter: (value, record) => record.area_kota.trim().indexOf(value) === 0,
@@ -104,6 +125,18 @@ function Komoditas() {
       dataIndex: "size",
       sorter: (a, b) => a.size - b.size,
       filters: [
+        {
+          text: "30",
+          value: "30",
+        },
+        {
+          text: "40",
+          value: "40",
+        },
+        {
+          text: "50",
+          value: "50",
+        },
         {
           text: "60",
           value: "60",
@@ -122,7 +155,7 @@ function Komoditas() {
     {
       index: 4,
       title: "Harga",
-      dataIndex: "price",
+      dataIndex: "formatedPrice",
       sorter: (a, b) => a.price - b.price,
     },
     {
@@ -155,6 +188,7 @@ function Komoditas() {
         {
           label: 'Hapus',
           key: '3',
+          style: { color: "#f5222d" },
         },
       ]}
     />
@@ -166,21 +200,31 @@ function Komoditas() {
   }, [dispatch]);
 
   useEffect(() => {
+    let filtered = [];
     if (comoditySearch) {
-      const filtered = comodities.filter(item => (
+      filtered = comodities.filter(item => (
         item.uuid &&
         item.komoditas.trim().toLowerCase().includes(comoditySearch.trim()) 
       ));
-      setComoditiesFiltered(filtered);
     } else {
-      const notNull = comodities.filter(item => item.uuid);
-      setComoditiesFiltered(notNull);
+      filtered = comodities.filter(item => item.uuid);
     }
+    const comoditiesData = filtered.map(comodity => {
+      const tmp = comodity;
+      tmp.formatedPrice = formatCurrency(comodity.price).replace(/[$]/g, '');
+      return tmp;
+    });
+    setComoditiesFiltered(comoditiesData);
   }, [comodities, comoditySearch])
 
-  const onTableChange = (pagination, filters, sorter, extra) => {
-    console.log("params: ", pagination, filters, sorter, extra);
-  }
+  const formatCurrency = (val) => {
+    if (!val) return formattedCurrency.format(0);
+      return formattedCurrency.format(val);
+  };
+
+  // const onTableChange = (pagination, filters, sorter, extra) => {
+  //   console.log("params: ", pagination, filters, sorter, extra);
+  // }
 
   const onSearchKomoditas = (value) => {
     setComoditySearch(value);
@@ -207,37 +251,33 @@ function Komoditas() {
     <div
       className="content-layout-container"
     >
-      {/* {loading && 
-        <Spin className="loading-container" />
-      } */}
-      {/* {!loading &&  */}
-        <>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div>
-              <Search placeholder="Cari Komoditas" onSearch={onSearchKomoditas} allowClear style={{ width: 200 }} />
-            </div>
-            <div>
-              <Button type="primary" onClick={onAddComodity}>
-                <PlusOutlined />
-                Tambah Komoditas
-              </Button>
-            </div>
+      <>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div>
+            <Search placeholder="Cari Komoditas" onSearch={onSearchKomoditas} allowClear style={{ width: 200 }} />
           </div>
-          <div className="table-box">
-            <Table 
-              columns={columns} 
-              dataSource={comoditiesFiltered}
-              onChange={onTableChange} 
-              pagination={false} 
-              loading={loading}
-              rowKey="uuid" 
-              scroll={{ x: 568 }}
-            />
+          <div>
+            <Button type="primary" onClick={onAddComodity}>
+              <PlusOutlined />
+              Tambah Komoditas
+            </Button>
           </div>
-          <KomoditasModal title="Tambah Komoditas" modalOpen={modalOpen} setModalOpen={setModalOpen} currentComodity={currentComodity} />
-          <DeleteComodity title="Hapus Komoditas" modalOpen={deleteOpen} setDeleteOpen={setDeleteOpen} currentComodity={currentComodity} />
-        </>
-      {/* } */}
+        </div>
+        <div className="table-box">
+          <Table 
+            columns={columns} 
+            dataSource={comoditiesFiltered}
+            // onChange={onTableChange} 
+            pagination={false} 
+            showSorterTooltip={false}
+            loading={loading}
+            rowKey="uuid" 
+            scroll={{ x: 568 }}
+          />
+        </div>
+        <KomoditasModal title="Tambah Komoditas" modalOpen={modalOpen} setModalOpen={setModalOpen} currentComodity={currentComodity} />
+        <DeleteComodity title="Hapus Komoditas" modalOpen={deleteOpen} setDeleteOpen={setDeleteOpen} currentComodity={currentComodity} />
+      </>
     </div>
   )
 }

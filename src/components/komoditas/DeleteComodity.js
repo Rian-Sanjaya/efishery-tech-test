@@ -30,10 +30,14 @@ function DeleteComodity({ title, modalOpen, setDeleteOpen, currentComodity }) {
       onCancel={handleCancel}
       footer={[
         <Button key="cancel" onClick={handleCancel}>Cancel</Button>,
-        <Button key="submit" type="primary" htmlType="submit" loading={loading} onClick={e => handleDelete(e)}>Hapus</Button>
+        <Button key="submit" type="danger" htmlType="submit" loading={loading} onClick={e => handleDelete(e)}>Hapus</Button>
       ]}
     >
-      <div><span>Komoditas&nbsp;</span><span>{currentComodity?.komoditas}</span><span>&nbsp;akan dihapus?</span></div>
+      <div className="delete-content">
+        <span>Komoditas&nbsp;</span>
+        <span className="comodity">{currentComodity?.komoditas}</span>
+        <span>&nbsp;akan dihapus?</span>
+      </div>
     </Modal>
   );
 }

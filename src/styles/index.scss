@@ -8,11 +8,16 @@ body {
   height: inherit;
 }
 
-.loading-container {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+.input-box {
+  margin-bottom: 12px;
+
+  .input-label {
+    font-weight: 700;
+  }
+
+  .invalid-input {
+    color: #f5222d;
+  }
 }
 
 .layout-header-box {
@@ -38,9 +43,18 @@ body {
     height: calc(100% - 52px);
     position: relative;
     min-width: 554px;
+    overflow-y: scroll;
 
     .table-box {
       margin-top: 24px;
     }
+  }
+}
+
+.delete-content {
+  font-size: 1.1rem;
+
+  .comodity {
+    font-weight: 700;
   }
 }

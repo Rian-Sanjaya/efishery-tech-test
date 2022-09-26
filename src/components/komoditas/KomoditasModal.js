@@ -20,24 +20,23 @@ const sortArea = (a, b) => {
   return 0;
 };
 
-const sortSizes = (a, b) => {
-  const nameA = a.size.trim().toUpperCase();
-  const nameB = b.size.trim().toUpperCase();
-  if (nameA < nameB) {
-    return -1;
-  }
-  if (nameA > nameB) {
-    return 1;
-  }
+// const sortSizes = (a, b) => {
+//   const nameA = a.size.trim().toUpperCase();
+//   const nameB = b.size.trim().toUpperCase();
+//   if (nameA < nameB) {
+//     return -1;
+//   }
+//   if (nameA > nameB) {
+//     return 1;
+//   }
 
-  return 0;
-};
+//   return 0;
+// };
 
 function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
   const [areasSorted, setAreasSorted] = useState(null);
   const [province, setProvince] = useState("");
   const [sizesSorted, setSizesSorted] = useState(null);
-  const [isValid, setIsValid] = useState(true);
   const areas = useSelector(getAreas);
   const loading = useSelector(getLoading);
   const sizes = useSelector(getSizes);
@@ -53,34 +52,23 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
   useEffect(() => {
     if (areas && areas.length > 0) {
       const filtered = areas.filter(area => area.city)
-      // console.log(filtered)
       const sorted = filtered.sort(sortArea);
-      // const sorted = filtered;
       setAreasSorted(sorted);
     }
 
     if (sizes && sizes.length > 0) {
-      // const sorted = sizes.sort(sortSizes);
-      // setSizesSorted(sorted);
       setSizesSorted(sizes);
     }
   }, [areas, sizes])
 
   useEffect(() => {
-    // console.log("currentComodity: ", currentComodity);
     if(currentComodity?.uuid) {
-      // reset({
-      //   comodity: currentComodity.komoditas
-      // });
-      // console.log(watch("comodity"))
-      setValue("comodity", currentComodity.komoditas, { shouldDirty: true });
-      // console.log(watch("comodity"))
+      setValue("comodity", currentComodity.komoditas);
       const area = areasSorted?.find(area => area.city.trim() === currentComodity.area_kota.trim());
       setValue("city", currentComodity.area_kota);
       setProvince(area?.province);
       setValue("size", currentComodity.size);
       setValue("price", currentComodity.price);
-      // trigger();
     } else {
       reset();
     }
@@ -89,11 +77,6 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
   const handleCancel = () => {
     setModalOpen(false);
   };
-
-  // const onSubmit = data => {
-  //   console.log("data: ", data)
-  //   setModalOpen(false);
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,6 +113,11 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
     } else {
       dispatch(addComodity([comodity]))
         .then(() => {
+          setValue("comodity", "");
+          setValue("city", "");
+          setProvince("");
+          setValue("size", "");
+          setValue("price", "");
           setModalOpen(false);
         })
         .catch(err => {
@@ -137,8 +125,6 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
         })
     }
   }
-  
-  // const onErrors = errors => console.log("Errors: ", errors);
 
   const onInputChange = async (e) => {
     const target = e.target;
@@ -146,35 +132,24 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
     const value = target.value;
     
     setValue(name, value.toUpperCase());
-    const result = await trigger("comodity");
-    // console.log(result)
-    setIsValid(result)
-    // console.log("comodity: ", errors.comodity)
-    // console.log(errors)
+    await trigger("comodity");
   };
 
   const onAreaChange = async (value) => {
     const area = areasSorted.find(area => area.city.trim() === value.trim());
     setValue("city", value);
     setProvince(area.province);
-    // setValue("province", area.province);
-    const result = await trigger("city");
-    // console.log(watch("province"))
-    setIsValid(result);
+    await trigger("city");
   };
 
   const onSizeChange = async (value) => {
     setValue("size", value);
-    const result = await trigger("size");
-    // console.log(result)
-    setIsValid(result)
+    await trigger("size");
   };
 
   const onPriceChange = async (value) => {
     setValue("price", value);
-    const result = await trigger("price");
-    // console.log(result)
-    setIsValid(result)
+    await trigger("price");
   };
 
   return (
@@ -188,14 +163,10 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
       footer={[
         <Button key="back" onClick={handleCancel}>Cancel</Button>,
         <Button key="submit" type="primary" htmlType="submit" loading={loading} onClick={e => handleSubmit(e)}>Save</Button>
-        // <Button key="submit" type="primary" htmlType="submit" onSubmit={e => handleSubmit(e)}>Save</Button>
-        // <button type="submit" onClick={{onSubmit}}>Save</button>
-        // <input type="submit" />
       ]}
     >
-      {/* <form className="form-box" onSubmit={handleSubmit(onSubmit, onErrors)}> */}
       <form className="form-box" onSubmit={handleSubmit}>
-        <div>
+        <div className="input-box">
           <div className="input-label">Komoditas</div>
           <Input 
             placeholder="Contoh: Nila" 
@@ -208,14 +179,9 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
             value={watch("comodity")}
             onChange={e => onInputChange(e)}
           />
-          {/* <input 
-            placeholder="Contoh: Nila" 
-            name="comodity" 
-            onChange={e => onInputChange(e)}
-          /> */}
           {errors.comodity && <span className="invalid-input">Komoditas harus diisi</span>}
         </div>
-        <div>
+        <div className="input-box">
           <div className="input-label">Kota</div>
           <Select 
             placeholder="Pilih Kota"
@@ -233,28 +199,16 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
           </Select>
           {errors.city && <span className="invalid-input">Kota harus diisi</span>}
         </div>
-        <div>
+        <div className="input-box">
           <div className="input-label">Provinsi</div>
           <Input 
             placeholder="Provinsi"
             disabled
             name="province"
-            // {...register("province", {
-            //   required: true,
-            // })}
             value={province}
           />
-          {/* <input 
-            placeholder="Provinsi"
-            disabled
-            name="province"
-            // {...register("province", {
-            //   required: true,
-            // })}
-            value={province}
-          /> */}
         </div>
-        <div>
+        <div className="input-box">
           <div className="input-label">Ukuran</div>
           <Select 
             placeholder="Pilih Ukuran"
@@ -272,7 +226,7 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
           </Select>
           {errors.size && <span className="invalid-input">Ukuran harus diisi</span>}
         </div>
-        <div>
+        <div className="input-box">
           <div className="input-label">Harga</div>
           <InputNumber
             name="price" 
@@ -286,7 +240,7 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
             value={watch("price")}
             onChange={onPriceChange}
           />
-          {errors.price && <span className="invalid-input">Ukuran harus diisi</span>}
+          {errors.price && <span className="invalid-input">Harga harus diisi</span>}
         </div>
       </form>
     </Modal>
