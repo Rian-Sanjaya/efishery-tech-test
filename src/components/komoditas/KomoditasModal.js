@@ -69,6 +69,7 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
       setProvince(area?.province);
       setValue("size", currentComodity.size);
       setValue("price", currentComodity.price);
+      trigger();
     } else {
       reset();
     }
