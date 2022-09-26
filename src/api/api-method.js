@@ -4,6 +4,6 @@ export const steinStore = new SteinStore(
   "https://api.steinhq.com/v1/storages/632d89aabc148508ba8f0dfb"
 );
 
-// export const steinStore = new SteinStore(
-//   "https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4"
-// );
+export const eFisherySteinStore = new SteinStore(
+  "https://stein.efishery.com/v1/storages/5e1edf521073e315924ceab4/"
+);
