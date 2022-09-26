@@ -54,6 +54,96 @@ export function fetchComodities() {
           reject(err);
         });
     });
+  };
+}
+
+export function addComodity(comodity) {
+  return (dispatch) => {
+    return new Promise((resolve, reject) => {
+      dispatch(setLoading(true));
+      steinStore.append("list", comodity)
+        .then(() => {
+          dispatch(fetchComodities())
+            .then(res => {
+              dispatch(setLoading(false));
+              resolve(res);
+            })
+            .catch(err => {
+              dispatch(setLoading(false));
+              console.log("Error: ", err);
+              reject(err);
+            });
+        })
+        .catch(err => {
+          dispatch(setLoading(false));
+          console.log("Error: ", err);
+          reject(err);
+        })
+    });
+  };
+}
+
+export function editComodity(comodity) {
+  return (dispatch) => {
+    return new Promise((resolve, reject) => {
+      dispatch(setLoading(true));
+      steinStore.edit("list", {
+        search: { uuid: comodity.uuid },
+        set: {
+          komoditas: comodity.komoditas,
+          area_kota: comodity.area_kota,
+          area_provinsi: comodity.area_provinsi,
+          price: comodity.price,
+          size: comodity.size,
+          timestamp: Date.now().toString(),
+        }
+      })
+        .then(() => {
+          dispatch(fetchComodities())
+            .then(res => {
+              dispatch(setLoading(false));
+              resolve(res);
+            })
+            .catch(err => {
+              dispatch(setLoading(false));
+              console.log("Error: ", err);
+              reject(err);
+            });
+        })
+        .catch(err => {
+          dispatch(setLoading(false));
+          console.log("Error: ", err);
+          reject(err);
+        })
+    })
+  }
+}
+
+export function deleteComodity(comodity) {
+  return (dispatch) => {
+    return new Promise((resolve, reject) => {
+      dispatch(setLoading(true));
+      steinStore.delete("list", {
+        search: { uuid: comodity.uuid },
+      })
+        .then(() => {
+          dispatch(fetchComodities())
+            .then(res => {
+              dispatch(setLoading(false));
+              resolve(res);
+            })
+            .catch(err => {
+              dispatch(setLoading(false));
+              console.log("Error: ", err);
+              reject(err);
+            });
+        })
+        .catch(err => {
+          dispatch(setLoading(false));
+          console.log("Error: ", err);
+          reject(err);
+        })
+    })
   }
 }
 
