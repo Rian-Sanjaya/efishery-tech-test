@@ -6,7 +6,7 @@ function App() {
   const { Header, Content } = Layout;
 
   return (
-    <Layout style={{ minWidth: 586 }}>
+    <Layout style={{ minWidth: 450 }}>
       <Header
         style={{ position: "fixed", zIndex: 1, width: "100%", background: "#fff" }}
       >
@@ -14,7 +14,7 @@ function App() {
       </Header>
       <Content
         className="content-layout-wrapper"
-        style={{ padding: "0 16px", marginTop: 64, minWidth: 586 }}
+        style={{ padding: "0 16px", marginTop: 64 }}
       >
         <Komoditas />
       </Content>

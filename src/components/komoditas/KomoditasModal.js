@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
-import { addComodity, editComodity, getLoading } from "../../store/komoditas";
+import { addComodity, editComodity, getLoading, getComodities } from "../../store/komoditas";
 import { getAreas, fetchAreas } from "../../store/area";
 import { getSizes, fetchSizes } from "../../store/size";
 import { Modal, Input, InputNumber, Select,  Button} from "antd";
@@ -37,6 +37,7 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
   const [areasSorted, setAreasSorted] = useState(null);
   const [province, setProvince] = useState("");
   const [sizesSorted, setSizesSorted] = useState(null);
+  const comodities = useSelector(getComodities);
   const areas = useSelector(getAreas);
   const loading = useSelector(getLoading);
   const sizes = useSelector(getSizes);
@@ -76,6 +77,17 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
   }, [currentComodity, areasSorted, setValue, trigger, reset, watch])
 
   const handleCancel = () => {
+    if(currentComodity?.uuid) {
+      setValue("comodity", currentComodity.komoditas);
+      const area = areasSorted?.find(area => area.city.trim() === currentComodity.area_kota.trim());
+      setValue("city", currentComodity.area_kota);
+      setProvince(area?.province);
+      setValue("size", currentComodity.size);
+      setValue("price", currentComodity.price);
+      trigger();
+    } else {
+      reset();
+    }
     setModalOpen(false);
   };
 
@@ -89,6 +101,18 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
       !watch("size") || 
       !watch("price")
     ) {
+      return;
+    }
+
+    // validate duplicate comodity
+    let find;
+    if (currentComodity?.uuid) {
+      find = comodities.filter(comodity => comodity.uuid && comodity.uuid !== currentComodity.uuid && comodity.komoditas === watch("comodity"));
+    } else {
+      find = comodities.filter(comodity => comodity.uuid && comodity.komoditas === watch("comodity"));
+    }
+    if (find && find.length > 0) {
+      alert("Duplicate Comodity");
       return;
     }
 
@@ -152,6 +176,12 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
     setValue("price", value);
     await trigger("price");
   };
+
+  const onPriceKeyDown = (e) => {
+    if (!/[0-9]/.test(e.key) && (e.key !== "Backspace" && e.key !== "ArrowLeft" && e.key !== "ArrowRight")) {
+      e.preventDefault();
+    }
+  }
 
   return (
     <Modal
@@ -240,6 +270,7 @@ function KomoditasModal({ title, modalOpen, setModalOpen, currentComodity }) {
             })}
             value={watch("price")}
             onChange={onPriceChange}
+            onKeyDown={e => onPriceKeyDown(e)}
           />
           {errors.price && <span className="invalid-input">Harga harus diisi</span>}
         </div>
